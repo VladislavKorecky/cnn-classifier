@@ -1,1 +1,1 @@
-# cnn-classifier
+# Convolution Neural Network Classifier
