@@ -3,7 +3,7 @@ from torch.optim import Adam
 from torch.utils.data import DataLoader
 from torch.nn.functional import cross_entropy
 
-from torchvision.datasets import MNIST
+from torchvision.datasets import CIFAR10
 from torchvision.transforms import ToTensor
 
 from matplotlib.pyplot import plot, show
@@ -16,15 +16,17 @@ from network import CNN
 # ------------------
 EPOCHS = 7
 BATCH_SIZE = 64
-LEARNING_RATE = 0.00003
+LEARNING_RATE = 0.00001
 
 # -----------------
 #       SETUP
 # -----------------
-dataset = MNIST("./", train=True, transform=ToTensor(), download=True)
+device = t.device("cuda" if t.cuda.is_available() else "cpu")
+
+dataset = CIFAR10("./", train=True, transform=ToTensor(), download=True)
 dataloader = DataLoader(dataset=dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-net = CNN()
+net = CNN().to(device)
 optimizer = Adam(net.parameters(), lr=LEARNING_RATE)
 
 accuracy_history = []
@@ -36,6 +38,9 @@ def train() -> None:
     """
 
     for data_batch, label_batch in dataloader:
+        # put the input data on a GPU
+        data_batch = data_batch.to(device)
+
         prediction = net.forward(data_batch)
 
         # turn the network output (a vector) into a single number representing the chosen class
